@@ -491,7 +491,7 @@ class Model:
             # ref: https://huggingface.co/core42/jais-13b
             res = "jais"
         if chkhsh == "855059429035d75a914d1eda9f10a876752e281a054a7a3d421ef0533e5b6249":
-            # ref: https://huggingface.co/eliebak/350M-test-bf16
+            # ref: HuggingFaceTB/cosmo2-362M-600B-fp32
             res = "smolLM"
 
         if res is None:
