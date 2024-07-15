@@ -2495,10 +2495,31 @@ class Gemma2Model(Model):
 class StarCoder2Model(Model):
     model_arch = gguf.MODEL_ARCH.STARCODER2
 
-@Model.register("SmolLMForCausalLM")
-class SmolLMModel(Model):
+@Model.register("SmolLM")
+class SmolLMModel(LlamaModel):
     model_arch = gguf.MODEL_ARCH.LLAMA
-    
+
+    def _set_vocab_llama_hf(self):
+        vocab = gguf.SmolLMHfVocab(self.dir_model)
+        tokens = []
+        scores = []
+        toktypes = []
+
+        for text, score, toktype in vocab.all_tokens():
+            tokens.append(text)
+            scores.append(score)
+            toktypes.append(toktype)
+
+        assert len(tokens) == vocab.vocab_size
+
+        self.gguf_writer.add_tokenizer_model("smolLM")
+        self.gguf_writer.add_tokenizer_pre("default")
+        self.gguf_writer.add_token_list(tokens)
+        self.gguf_writer.add_token_scores(scores)
+        self.gguf_writer.add_token_types(toktypes)
+
+        special_vocab = gguf.SpecialVocab(self.dir_model, n_vocab=len(tokens))
+        special_vocab.add_to_gguf(self.gguf_writer)    
 
 @Model.register("MambaForCausalLM", "MambaLMHeadModel")
 class MambaModel(Model):
